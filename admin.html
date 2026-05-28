@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Ultimate Downloads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-section i {
+            font-size: 50px;
+            color: #7ac142;
+            margin-bottom: 15px;
+        }
+        
+        .logo-section h1 {
+            font-size: 22px;
+            color: #1a1a1a;
+            font-weight: 800;
+        }
+        
+        .logo-section p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #e5e5e5;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        .form-group input:focus {
+            border-color: #7ac142;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #7ac142;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .login-btn:hover {
+            background: #6aaf33;
+            transform: translateY(-2px);
+        }
+        
+        .login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .error-msg {
+            background: #ffe5e5;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .error-msg.show {
+            display: block;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .footer-note a {
+            color: #7ac142;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="logo-section">
+        <i class="fa-solid fa-shield-halved"></i>
+        <h1>Admin Panel</h1>
+        <p>Ultimate Downloads © 2026</p>
+    </div>
+    
+    <div class="error-msg" id="errorMsg">Invalid username or password</div>
+    
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Enter username" autocomplete="off">
+    </div>
+    
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter password">
+    </div>
+    
+    <button class="login-btn" onclick="login()">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+    </button>
+    
+    <div class="footer-note">
+        <a href="/">← Back to website</a>
+    </div>
+</div>
+
+<script>
+async function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+    const btn = document.querySelector('.login-btn');
+    
+    if (!username || !password) {
+        errorMsg.textContent = 'Please fill all fields';
+        errorMsg.classList.add('show');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            localStorage.setItem('adminToken', data.token);
+            window.location.href = '/dashboard.html';
+        } else {
+            errorMsg.textContent = data.message || 'Invalid username or password';
+            errorMsg.classList.add('show');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login';
+        }
+    } catch (error) {
+        errorMsg.textContent = 'Server error. Try again.';
+        errorMsg.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login';
+    }
+}
+
+document.getElementById('password').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') login();
+});
+</script>
+
+</body>
+</html>

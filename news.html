@@ -32,9 +32,16 @@
         }
         
         .news-card .banner {
-            height: 160px;
-            background: linear-gradient(135deg, #7ac142, #6aaf33);
+            height: 140px;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .news-card .banner i {
+            font-size: 50px;
+            color: rgba(255,255,255,0.3);
         }
         
         .news-card .tag {
@@ -97,48 +104,7 @@
 </div>
 
 <div class="news-list" id="newsList">
-    <!-- Static news for now, can be made dynamic later -->
-    <div class="news-card">
-        <div class="banner" style="background: linear-gradient(135deg, #7ac142, #4a7c1f);">
-            <span class="tag">Welcome</span>
-        </div>
-        <div class="content">
-            <h3>Welcome to Ultimate Downloads 2026</h3>
-            <p>The premier destination for premium apps and games. Safe, fast, and 100% free downloads for everyone.</p>
-            <div class="meta">
-                <span><i class="fa-solid fa-user"></i> Admin</span>
-                <span><i class="fa-solid fa-calendar"></i> Just Now</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="news-card">
-        <div class="banner" style="background: linear-gradient(135deg, #ff7a3d, #e65100);">
-            <span class="tag">Update</span>
-        </div>
-        <div class="content">
-            <h3>New Apps Added Daily</h3>
-            <p>We update our library every day with the latest premium apps and modded games. Check back often for fresh content.</p>
-            <div class="meta">
-                <span><i class="fa-solid fa-user"></i> Admin</span>
-                <span><i class="fa-solid fa-calendar"></i> Today</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="news-card">
-        <div class="banner" style="background: linear-gradient(135deg, #3498db, #2980b9);">
-            <span class="tag">Safety</span>
-        </div>
-        <div class="content">
-            <h3>100% Safe & Virus Free</h3>
-            <p>Every APK on our platform is scanned and verified safe before being published. Your security is our top priority.</p>
-            <div class="meta">
-                <span><i class="fa-solid fa-user"></i> Admin</span>
-                <span><i class="fa-solid fa-calendar"></i> This Week</span>
-            </div>
-        </div>
-    </div>
+    <div class="loading">Loading news...</div>
 </div>
 
 <nav class="bottom-nav">
@@ -160,6 +126,64 @@
 </nav>
 
 <script src="/js/main.js"></script>
+<script>
+function formatDate(timestamp) {
+    if (!timestamp) return 'Recently';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return Math.floor(diff/60) + ' min ago';
+    if (diff < 86400) return Math.floor(diff/3600) + ' hours ago';
+    if (diff < 604800) return Math.floor(diff/86400) + ' days ago';
+    return date.toLocaleDateString();
+}
+
+async function loadNews() {
+    try {
+        const response = await fetch('/api/news');
+        const data = await response.json();
+        const news = data.news || [];
+        const list = document.getElementById('newsList');
+        
+        if (news.length === 0) {
+            list.innerHTML = `
+                <div class="loading" style="padding: 50px;">
+                    <i class="fa-solid fa-newspaper" style="font-size: 50px; color: #ddd; display: block; margin-bottom: 15px;"></i>
+                    No news posted yet
+                </div>
+            `;
+            return;
+        }
+        
+        list.innerHTML = news.map(n => `
+            <div class="news-card" onclick="openNews('${n.id}')">
+                <div class="banner" style="background: ${n.color || 'linear-gradient(135deg, #7ac142, #4a7c1f)'};">
+                    <i class="fa-solid fa-newspaper"></i>
+                    <span class="tag">${n.tag || 'News'}</span>
+                </div>
+                <div class="content">
+                    <h3>${n.title}</h3>
+                    <p>${n.content.length > 120 ? n.content.substring(0, 120) + '...' : n.content}</p>
+                    <div class="meta">
+                        <span><i class="fa-solid fa-user"></i> ${n.author || 'Admin'}</span>
+                        <span><i class="fa-solid fa-calendar"></i> ${formatDate(n.createdAt)}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        document.getElementById('newsList').innerHTML = '<div class="loading">Failed to load news</div>';
+    }
+}
+
+function openNews(id) {
+    window.location.href = '/news-detail.html?id=' + id;
+}
+
+loadNews();
+</script>
 
 </body>
 </html>

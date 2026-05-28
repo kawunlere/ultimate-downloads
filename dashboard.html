@@ -111,7 +111,6 @@
 
 <div class="main-container">
 
-    <!-- APPS TAB -->
     <div class="tab-content active" id="appsTab">
         <div class="section-box">
             <div class="section-header">
@@ -127,7 +126,6 @@
         </div>
     </div>
 
-    <!-- NEWS TAB -->
     <div class="tab-content" id="newsTab">
         <div class="section-box">
             <div class="section-header">
@@ -145,7 +143,6 @@
 
 </div>
 
-<!-- APP MODAL -->
 <div class="modal-overlay" id="appModal">
     <div class="modal">
         <h2><span id="appModalTitle">Add New App</span><span class="close-modal" onclick="closeAppModal()">×</span></h2>
@@ -159,6 +156,7 @@
         <div class="form-group"><label>Rating (1-5)</label><input type="text" id="appRating" placeholder="e.g. 4.5"></div>
         <div class="form-group"><label>Mod Info</label><input type="text" id="appModInfo" placeholder="e.g. Unlimited Money"></div>
         <div class="form-group"><label>Description</label><textarea id="appDescription" placeholder="Short description"></textarea></div>
+        <div class="form-group"><label>Screenshots URLs (separate with commas)</label><textarea id="appScreenshots" placeholder="https://img1.jpg, https://img2.jpg, https://img3.jpg"></textarea></div>
         <div class="checkbox-group">
             <label><input type="checkbox" id="appFeatured"> Featured</label>
             <label><input type="checkbox" id="appTop"> Top App</label>
@@ -167,7 +165,6 @@
     </div>
 </div>
 
-<!-- NEWS MODAL -->
 <div class="modal-overlay" id="newsModal">
     <div class="modal">
         <h2><span id="newsModalTitle">Add News</span><span class="close-modal" onclick="closeNewsModal()">×</span></h2>
@@ -206,7 +203,6 @@ function switchMainTab(tab, el) {
     document.getElementById(tab + 'Tab').classList.add('active');
 }
 
-// ===== APPS =====
 async function loadApps() {
     try {
         const res = await fetch('/api/apps');
@@ -241,7 +237,7 @@ async function loadApps() {
 
 function openAppModal() {
     document.getElementById('appModalTitle').textContent = 'Add New App';
-    ['appId','appName','appCategory','appIcon','appDownload','appVersion','appRating','appModInfo','appDescription'].forEach(id => document.getElementById(id).value = '');
+    ['appId','appName','appCategory','appIcon','appDownload','appVersion','appRating','appModInfo','appDescription','appScreenshots'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('appType').value = 'app';
     document.getElementById('appFeatured').checked = false;
     document.getElementById('appTop').checked = false;
@@ -267,6 +263,7 @@ async function editApp(id) {
     document.getElementById('appRating').value = app.rating || '';
     document.getElementById('appModInfo').value = app.modInfo || '';
     document.getElementById('appDescription').value = app.description || '';
+    document.getElementById('appScreenshots').value = app.screenshots || '';
     document.getElementById('appFeatured').checked = app.featured || false;
     document.getElementById('appTop').checked = app.top || false;
     document.getElementById('appModal').classList.add('active');
@@ -284,6 +281,7 @@ async function saveApp() {
         rating: document.getElementById('appRating').value.trim(),
         modInfo: document.getElementById('appModInfo').value.trim(),
         description: document.getElementById('appDescription').value.trim(),
+        screenshots: document.getElementById('appScreenshots').value.trim(),
         featured: document.getElementById('appFeatured').checked,
         top: document.getElementById('appTop').checked,
         createdAt: Date.now()
@@ -308,7 +306,6 @@ async function deleteApp(id) {
     if (data.success) { showToast('Deleted'); loadApps(); }
 }
 
-// ===== NEWS =====
 async function loadNews() {
     try {
         const res = await fetch('/api/news');

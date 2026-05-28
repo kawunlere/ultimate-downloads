@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultimate Downloads - Premium Apps & Games 2026</title>
     <meta name="description" content="Download premium apps and games for free. Safe, fast, and updated daily.">
+    <meta name="keywords" content="apk download, mod apk, premium apps, free games, android apps">
+    <meta name="author" content="Ultimate Downloads">
+    <meta property="og:title" content="Ultimate Downloads - Premium Apps & Games">
+    <meta property="og:description" content="Download premium apps and games for free.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ultimate-downloads.pages.dev">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://ultimate-downloads.pages.dev">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -23,7 +31,8 @@
 
 <!-- SEARCH BAR -->
 <div class="search-box" id="searchBox">
-    <input type="text" placeholder="Search apps and games...">
+    <input type="text" placeholder="Search apps and games..." id="globalSearch">
+    <div class="search-results" id="searchResults"></div>
 </div>
 
 <!-- SIDE MENU -->
@@ -37,6 +46,14 @@
 
 <!-- MAIN CONTENT -->
 <main>
+
+    <!-- HERO SLIDER (NEW!) -->
+    <section class="hero-slider-wrap">
+        <div class="hero-slider" id="heroSlider">
+            <div class="loading">Loading...</div>
+        </div>
+        <div class="hero-dots" id="heroDots"></div>
+    </section>
 
     <!-- FEATURED SECTION -->
     <section class="section">
@@ -102,7 +119,6 @@
     </a>
 </nav>
 
-<!-- FOOTER -->
 <footer>
     <p>© 2026 Ultimate Downloads. All rights reserved.</p>
 </footer>

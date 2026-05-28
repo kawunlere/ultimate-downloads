@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Downloads - Premium Apps & Games 2026</title>
+    <meta name="description" content="Download premium apps and games for free. Safe, fast, and updated daily.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+    <div class="menu-icon" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+    </div>
+    <a href="/" class="logo">ULTIMATE<span>DOWNLOADS</span></a>
+    <div class="search-icon" onclick="toggleSearch()">🔍</div>
+</header>
+
+<!-- SEARCH BAR (Hidden by default) -->
+<div class="search-box" id="searchBox">
+    <input type="text" placeholder="Search apps and games...">
+</div>
+
+<!-- SIDE MENU (Hidden by default) -->
+<div class="side-menu" id="sideMenu">
+    <a href="/">Home</a>
+    <a href="/apps.html">Apps</a>
+    <a href="/games.html">Games</a>
+    <a href="/news.html">News</a>
+    <a href="/browse.html">Browse</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+
+    <!-- FEATURED SECTION -->
+    <section class="section">
+        <h2 class="section-title">🔥 Indispensable on your phone</h2>
+        <div class="featured-slider" id="featuredSlider">
+            <!-- Apps load here from database -->
+            <div class="loading">Loading featured apps...</div>
+        </div>
+    </section>
+
+    <!-- TOP APPS -->
+    <section class="section">
+        <h2 class="section-title">👑 Top Apps</h2>
+        <div class="top-apps-slider" id="topAppsSlider">
+            <div class="loading">Loading top apps...</div>
+        </div>
+    </section>
+
+    <!-- LATEST GAMES -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">🎮 Latest Games</h2>
+            <a href="/games.html" class="more-link">More</a>
+        </div>
+        <div class="apps-list" id="latestGames">
+            <div class="loading">Loading latest games...</div>
+        </div>
+    </section>
+
+    <!-- MUST HAVE COLLECTION -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">🧩 Must Have Collection</h2>
+            <a href="/browse.html" class="more-link">More</a>
+        </div>
+        <div class="collection-grid" id="collections">
+            <div class="loading">Loading collections...</div>
+        </div>
+    </section>
+
+</main>
+
+<!-- BOTTOM NAVIGATION -->
+<nav class="bottom-nav">
+    <a href="/" class="nav-item active">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+    </a>
+    <a href="/apps.html" class="nav-item">
+        <span class="nav-icon">📱</span>
+        <span class="nav-label">Apps</span>
+    </a>
+    <a href="/games.html" class="nav-item">
+        <span class="nav-icon">🎮</span>
+        <span class="nav-label">Games</span>
+    </a>
+    <a href="/news.html" class="nav-item">
+        <span class="nav-icon">🔥</span>
+        <span class="nav-label">News</span>
+    </a>
+    <a href="/browse.html" class="nav-item">
+        <span class="nav-icon">💀</span>
+        <span class="nav-label">Browse</span>
+    </a>
+</nav>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2026 Ultimate Downloads. All rights reserved.</p>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

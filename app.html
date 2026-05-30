@@ -10,41 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body { background: #1a1a1a; color: #fff; }
-        .app-hero-bg {
-            position: relative;
-            height: 280px;
-            background-size: cover;
-            background-position: center;
-            background-color: #2a2a2a;
-        }
-        .app-hero-bg::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(26,26,26,0.95) 100%);
-        }
-        .app-hero-bg .app-title-overlay {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            z-index: 2;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-        }
-        .app-hero-bg h1 {
-            font-size: 24px;
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-        }
-        .app-hero-bg .hero-icon-small {
-            width: 60px; height: 60px; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
+        .app-hero-bg { position: relative; height: 280px; background-size: cover; background-position: center; background-color: #2a2a2a; }
+        .app-hero-bg::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(26,26,26,0.95) 100%); }
+        .app-hero-bg .app-title-overlay { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 2; display: flex; align-items: flex-end; justify-content: space-between; }
+        .app-hero-bg h1 { font-size: 24px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+        .app-hero-bg .hero-icon-small { width: 60px; height: 60px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .breadcrumb-dark { background: #1a1a1a; padding: 12px 20px; font-size: 13px; }
         .breadcrumb-dark a { color: #7ac142; font-weight: 600; }
         .breadcrumb-dark .current { color: #ff7a3d; font-weight: 600; }
@@ -55,27 +25,18 @@
         .app-developer { color: #7ac142; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
         .app-badges { display: flex; gap: 8px; flex-wrap: wrap; }
         .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; }
-        .badge-editor { background: #ff7a3d; }
-        .badge-paid { background: #7ac142; }
-        .badge-free { background: #3498db; }
+        .badge-editor-tag { background: #ff7a3d; }
+        .badge-paid-tag { background: #7ac142; }
+        .badge-free-tag { background: #3498db; }
         .mod-tag { color: #ff7a3d; font-size: 14px; font-weight: 600; margin: 20px 0 10px; }
         .app-description { color: #ccc; font-size: 14px; line-height: 1.7; font-style: italic; margin-bottom: 25px; }
         .app-stats-row { display: flex; justify-content: space-around; align-items: center; padding: 15px 0; border-top: 1px solid #333; border-bottom: 1px solid #333; margin-bottom: 25px; }
         .stat-block { text-align: center; }
         .stat-block .stat-val { font-size: 17px; font-weight: 800; color: #fff; }
         .stat-block .stat-lbl { font-size: 11px; color: #888; margin-top: 3px; text-transform: uppercase; }
-        .play-stat { display: flex; align-items: center; gap: 5px; }
         .play-stat img { height: 24px; }
         .rating-stat { color: #ff7a3d !important; }
-        .download-btn-big {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 16px;
-            background: linear-gradient(135deg, #7ac142, #5a9d2e);
-            color: #fff; border: none; border-radius: 30px;
-            font-size: 17px; font-weight: 700; cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 6px 20px rgba(122,193,66,0.4);
-        }
+        .download-btn-big { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; background: linear-gradient(135deg, #7ac142, #5a9d2e); color: #fff; border: none; border-radius: 30px; font-size: 17px; font-weight: 700; cursor: pointer; text-decoration: none; box-shadow: 0 6px 20px rgba(122,193,66,0.4); }
         .action-row { display: flex; justify-content: center; gap: 30px; margin-top: 20px; padding: 15px 0; }
         .action-btn { color: #7ac142; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; text-decoration: none; }
         .action-btn.orange { color: #ff7a3d; }
@@ -152,10 +113,16 @@ async function loadAppDetail() {
         const data = await res.json();
         const app = data.apps.find(a => a.id === id);
         if (!app) { container.innerHTML = '<div class="not-found"><i class="fa-solid fa-circle-exclamation"></i><h2>App Not Found</h2></div>'; return; }
-        document.title = `${app.name} - Ultimate Downloads`;
+        document.title = app.name + ' - Ultimate Downloads';
         const related = data.apps.filter(a => a.id !== app.id && a.category === app.category).slice(0, 8);
         const screenshots = app.screenshots ? app.screenshots.split(',').map(s => s.trim()).filter(s => s) : [];
         const bgImage = app.background || app.icon;
+        const editorBadge = app.editorChoice ? '<span class="badge badge-editor-tag">Editor Choice</span>' : '';
+        const paidBadge = app.paid ? '<span class="badge badge-paid-tag">Paid</span>' : '<span class="badge badge-free-tag">Free</span>';
+        const playLink = app.playUrl ? '<a href="' + app.playUrl + '" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/2560px-Google_Play_Store_badge_EN.svg.png" style="height:20px;"></a>' : '<i class="fa-brands fa-google-play" style="color:#7ac142;font-size:20px;"></i>';
+        const modFirstWord = app.modInfo ? (app.modInfo.split(',')[0] || 'Premium') : '';
+        const titleSuffix = app.modInfo ? ' (MOD, ' + modFirstWord + ')' : '';
+        
         container.innerHTML = `
             <div class="app-hero-bg" style="background-image: url('${bgImage}');">
                 <div class="app-title-overlay">
@@ -172,17 +139,16 @@ async function loadAppDetail() {
                 <div class="app-main-row">
                     <img src="${app.icon}" class="app-main-icon" onerror="this.src='https://via.placeholder.com/100/333/7ac142?text=APP'">
                     <div class="app-main-details">
-                        <h1>${app.name}${app.version ? ' v' + app.version : ''} ${app.type === 'game' ? 'APK' : 'APK'}${app.modInfo ? ' (MOD, ' + (app.modInfo.split(',')[0] || 'Premium') + ')' : ''}</h1>
-                        ${app.developer ? `<div class="app-developer">${app.developer}</div>` : ''}
+                        <h1>${app.name}${app.version ? ' v' + app.version : ''} APK${titleSuffix}</h1>
+                        ${app.developer ? '<div class="app-developer">' + app.developer + '</div>' : ''}
                         <div class="app-badges">
-                            ${app.editorChoice ? '<span class="badge badge-editor">Editor\\'s Choice</span>' : ''}
-                            ${app.paid ? '<span class="badge badge-paid">Paid</span>' : '<span class="badge badge-free">Free</span>'}
+                            ${editorBadge}
+                            ${paidBadge}
                         </div>
                     </div>
                 </div>
                 
-                ${app.modInfo ? `<div class="mod-tag">MOD: ${app.modInfo}</div>` : ''}
-                
+                ${app.modInfo ? '<div class="mod-tag">MOD: ' + app.modInfo + '</div>' : ''}
                 <div class="app-description">${app.description || 'No description available.'}</div>
                 
                 <div class="app-stats-row">
@@ -195,9 +161,7 @@ async function loadAppDetail() {
                         <div class="stat-lbl">Size</div>
                     </div>
                     <div class="stat-block">
-                        <div class="stat-val play-stat">
-                            ${app.playUrl ? `<a href="${app.playUrl}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/2560px-Google_Play_Store_badge_EN.svg.png" style="height:20px;"></a>` : '<i class="fa-brands fa-google-play" style="color:#7ac142;"></i>'}
-                        </div>
+                        <div class="stat-val play-stat">${playLink}</div>
                         <div class="stat-lbl">Get it on</div>
                     </div>
                     <div class="stat-block">
@@ -224,7 +188,7 @@ async function loadAppDetail() {
                 <div class="info-section-dark">
                     <h3><i class="fa-solid fa-images"></i> Screenshots</h3>
                     <div class="screenshots-scroll">
-                        ${screenshots.map(s => `<img src="${s}" onerror="this.style.display='none'">`).join('')}
+                        ${screenshots.map(s => '<img src="' + s + '" onerror="this.style.display=&quot;none&quot;">').join('')}
                     </div>
                 </div>
             ` : ''}
@@ -238,12 +202,7 @@ async function loadAppDetail() {
                 <div class="info-section-dark">
                     <h3><i class="fa-solid fa-thumbs-up"></i> You May Also Like</h3>
                     <div class="related-list">
-                        ${related.map(r => `
-                            <div class="related-item" onclick="window.location.href='/app.html?id=${r.id}'">
-                                <img src="${r.icon}" onerror="this.src='https://via.placeholder.com/80/333/7ac142?text=A'">
-                                <h4>${r.name}</h4>
-                            </div>
-                        `).join('')}
+                        ${related.map(r => '<div class="related-item" onclick="window.location.href=\\'/app.html?id=' + r.id + '\\'"><img src="' + r.icon + '" onerror="this.src=&quot;https://via.placeholder.com/80/333/7ac142?text=A&quot;"><h4>' + r.name + '</h4></div>').join('')}
                     </div>
                 </div>
             ` : ''}

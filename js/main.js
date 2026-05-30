@@ -65,9 +65,12 @@ function renderHeroSlider(apps) {
     const featured = apps.filter(a => a.featured).slice(0, 5);
     if (featured.length === 0) { slider.innerHTML = '<div class="loading">No featured apps yet</div>'; return; }
     const colors = ['linear-gradient(135deg, #667eea, #764ba2)','linear-gradient(135deg, #f093fb, #f5576c)','linear-gradient(135deg, #4facfe, #00f2fe)','linear-gradient(135deg, #43e97b, #38f9d7)','linear-gradient(135deg, #fa709a, #fee140)'];
-    slider.innerHTML = featured.map((app, i) => `
-        <div class="hero-slide ${i === 0 ? 'active' : ''}" style="background: ${app.background ? `url('${app.background}') center/cover` : colors[i % colors.length]};" onclick="openApp('${app.id}')">
-            ${app.background ? '<div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3));"></div>' : ''}
+    slider.innerHTML = featured.map((app, i) => {
+        const bgStyle = app.background ? `background: url('${app.background}') center/cover;` : `background: ${colors[i % colors.length]};`;
+        const overlay = app.background ? '<div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3));"></div>' : '';
+        return `
+        <div class="hero-slide ${i === 0 ? 'active' : ''}" style="${bgStyle}" onclick="openApp('${app.id}')">
+            ${overlay}
             <div class="hero-slide-content">
                 <span class="tag">⭐ FEATURED</span>
                 <h2>${app.name}</h2>
@@ -75,8 +78,8 @@ function renderHeroSlider(apps) {
                 <span class="btn-hero"><i class="fa-solid fa-download"></i> Download</span>
             </div>
             <img src="${app.icon}" class="hero-slide-icon" onerror="this.src='https://via.placeholder.com/90/ffffff/7ac142?text=APP'">
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
     dots.innerHTML = featured.map((_, i) => `<div class="hero-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`).join('');
     if (slideInterval) clearInterval(slideInterval);
     slideInterval = setInterval(() => nextSlide(featured.length), 4000);
@@ -112,14 +115,16 @@ function renderFeatured(apps) {
     if (!slider) return;
     const featured = apps.filter(a => a.featured).slice(0, 5);
     if (featured.length === 0) { slider.innerHTML = '<div class="loading">No featured apps yet</div>'; return; }
-    slider.innerHTML = featured.map(app => `
-        <div class="featured-card" onclick="openApp('${app.id}')" style="background: ${app.background ? `url('${app.background}') center/cover` : 'linear-gradient(135deg, #ff6b6b, #ee5a6f)'};">
+    slider.innerHTML = featured.map(app => {
+        const bg = app.background ? `background: url('${app.background}') center/cover;` : 'background: linear-gradient(135deg, #ff6b6b, #ee5a6f);';
+        return `
+        <div class="featured-card" onclick="openApp('${app.id}')" style="${bg}">
             <div class="featured-card-info">
                 <img src="${app.icon}" onerror="this.src='https://via.placeholder.com/40/7ac142/ffffff?text=A'">
                 <div><h3>${app.name}</h3><p>${app.category}</p></div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
 function renderTopApps(apps) {
@@ -127,17 +132,20 @@ function renderTopApps(apps) {
     if (!slider) return;
     const top = apps.filter(a => a.top).slice(0, 10);
     if (top.length === 0) { slider.innerHTML = '<div class="loading">No top apps yet</div>'; return; }
-    slider.innerHTML = top.map(app => `
+    slider.innerHTML = top.map(app => {
+        const editorBadge = app.editorChoice ? '<span class="badge-editor">Editor Choice</span>' : '';
+        const paidBadge = app.paid ? '<span class="badge-premium">PAID</span>' : '<span class="badge-premium">PREMIUM</span>';
+        return `
         <div class="top-app-card" onclick="openApp('${app.id}')">
-            <div class="img-wrap" style="${app.background ? `background:url('${app.background}') center/cover;` : ''}">
+            <div class="img-wrap">
                 <img src="${app.icon}" onerror="this.src='https://via.placeholder.com/140/7ac142/ffffff?text=APP'">
-                ${app.editorChoice ? '<span class="badge-editor">Editor\\'s Choice</span>' : ''}
-                ${app.paid ? '<span class="badge-premium">PAID</span>' : '<span class="badge-premium">PREMIUM</span>'}
+                ${editorBadge}
+                ${paidBadge}
             </div>
             <h3>${app.name}</h3>
             <p>${app.category}</p>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
 function renderLatestGames(apps) {
@@ -171,13 +179,12 @@ function renderCollections(collections, allApps) {
     grid.innerHTML = collections.map(col => {
         const colApps = (col.appIds || []).map(id => allApps.find(a => a.id === id)).filter(a => a).slice(0, 3);
         const moreCount = Math.max(0, (col.appIds || []).length - 3);
+        const iconsHtml = colApps.map(a => `<img src="${a.icon}" style="width:35px;height:35px;border-radius:8px;border:2px solid #fff;" onerror="this.style.display='none'">`).join('');
         return `
             <div class="collection-card" style="background: url('${col.background}') center/cover;" onclick="window.location.href='/collection.html?id=${col.id}'">
                 <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.7));"></div>
                 <h3 style="position:relative;z-index:2;">${col.title}</h3>
-                <div style="position:absolute;bottom:15px;left:15px;display:flex;gap:6px;z-index:2;">
-                    ${colApps.map(a => `<img src="${a.icon}" style="width:35px;height:35px;border-radius:8px;border:2px solid #fff;" onerror="this.style.display='none'">`).join('')}
-                </div>
+                <div style="position:absolute;bottom:15px;left:15px;display:flex;gap:6px;z-index:2;">${iconsHtml}</div>
                 ${moreCount > 0 ? `<div class="more-count" style="z-index:2;">+${moreCount} more</div>` : ''}
             </div>
         `;
@@ -192,7 +199,7 @@ function showEmpty() {
     });
 }
 
-function openApp(id) { window.location.href = `/app.html?id=${id}`; }
+function openApp(id) { window.location.href = '/app.html?id=' + id; }
 
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('sideMenu');

@@ -40,16 +40,10 @@ function performGlobalSearch(query) {
     }
     let html = '';
     matchedApps.forEach(app => {
-        html += '<div class="search-result-item" onclick="window.location.href=\'/app.html?id=' + app.id + '\'">';
-        html += '<img src="' + app.icon + '">';
-        html += '<div class="info"><h4>' + app.name + '</h4><p>' + (app.type === 'game' ? '🎮' : '📱') + ' ' + app.category + '</p></div>';
-        html += '</div>';
+        html += '<div class="search-result-item" onclick="window.location.href=\'/app.html?id=' + app.id + '\'"><img src="' + app.icon + '"><div class="info"><h4>' + app.name + '</h4><p>' + (app.type === 'game' ? '🎮' : '📱') + ' ' + app.category + '</p></div></div>';
     });
     matchedNews.forEach(n => {
-        html += '<div class="search-result-item" onclick="window.location.href=\'/news-detail.html?id=' + n.id + '\'">';
-        html += '<div style="width:40px;height:40px;border-radius:10px;background:' + (n.color || '#7ac142') + ';display:flex;align-items:center;justify-content:center;color:#fff;"><i class="fa-solid fa-newspaper"></i></div>';
-        html += '<div class="info"><h4>' + n.title + '</h4><p>📰 News</p></div>';
-        html += '</div>';
+        html += '<div class="search-result-item" onclick="window.location.href=\'/news-detail.html?id=' + n.id + '\'"><div style="width:40px;height:40px;border-radius:10px;background:' + (n.color || '#7ac142') + ';display:flex;align-items:center;justify-content:center;color:#fff;"><i class="fa-solid fa-newspaper"></i></div><div class="info"><h4>' + n.title + '</h4><p>📰 News</p></div></div>';
     });
     results.innerHTML = html;
     results.classList.add('active');
@@ -65,32 +59,16 @@ function renderHeroSlider(apps) {
     const featured = apps.filter(a => a.featured).slice(0, 5);
     if (featured.length === 0) { slider.innerHTML = '<div class="loading">No featured apps yet</div>'; return; }
     const colors = ['linear-gradient(135deg, #667eea, #764ba2)','linear-gradient(135deg, #f093fb, #f5576c)','linear-gradient(135deg, #4facfe, #00f2fe)','linear-gradient(135deg, #43e97b, #38f9d7)','linear-gradient(135deg, #fa709a, #fee140)'];
-    
     let html = '';
     featured.forEach((app, i) => {
         const bgStyle = app.background ? 'background: url(\'' + app.background + '\') center/cover;' : 'background: ' + colors[i % colors.length] + ';';
         const overlay = app.background ? '<div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3));"></div>' : '';
-        const active = i === 0 ? ' active' : '';
-        html += '<div class="hero-slide' + active + '" style="' + bgStyle + '" onclick="openApp(\'' + app.id + '\')">';
-        html += overlay;
-        html += '<div class="hero-slide-content">';
-        html += '<span class="tag">⭐ FEATURED</span>';
-        html += '<h2>' + app.name + '</h2>';
-        html += '<p>' + app.category + ' • ' + (app.modInfo || 'Premium Unlocked') + '</p>';
-        html += '<span class="btn-hero"><i class="fa-solid fa-download"></i> Download</span>';
-        html += '</div>';
-        html += '<img src="' + app.icon + '" class="hero-slide-icon">';
-        html += '</div>';
+        html += '<div class="hero-slide ' + (i === 0 ? 'active' : '') + '" style="' + bgStyle + '" onclick="openApp(\'' + app.id + '\')">' + overlay + '<div class="hero-slide-content"><span class="tag">⭐ FEATURED</span><h2>' + app.name + '</h2><p>' + app.category + ' • ' + (app.modInfo || 'Premium Unlocked') + '</p><span class="btn-hero"><i class="fa-solid fa-download"></i> Download</span></div><img src="' + app.icon + '" class="hero-slide-icon"></div>';
     });
     slider.innerHTML = html;
-    
     let dotsHtml = '';
-    featured.forEach((_, i) => {
-        const active = i === 0 ? ' active' : '';
-        dotsHtml += '<div class="hero-dot' + active + '" onclick="goToSlide(' + i + ')"></div>';
-    });
+    featured.forEach((_, i) => { dotsHtml += '<div class="hero-dot ' + (i === 0 ? 'active' : '') + '" onclick="goToSlide(' + i + ')"></div>'; });
     dots.innerHTML = dotsHtml;
-    
     if (slideInterval) clearInterval(slideInterval);
     slideInterval = setInterval(() => nextSlide(featured.length), 4000);
 }
@@ -112,12 +90,29 @@ async function loadApps() {
         const colsData = await colsRes.json();
         if (data.apps && data.apps.length > 0) {
             renderHeroSlider(data.apps);
+            renderTrending(data.apps);
             renderFeatured(data.apps);
             renderTopApps(data.apps);
             renderLatestGames(data.apps);
+            renderRecentlyViewed(data.apps);
             renderCollections(colsData.collections || [], data.apps);
         } else { showEmpty(); }
     } catch (error) { showEmpty(); }
+}
+
+function renderTrending(apps) {
+    const slider = document.getElementById('trendingSlider');
+    if (!slider) return;
+    const trending = [...apps].sort((a, b) => (b.downloads || 0) - (a.downloads || 0)).slice(0, 10);
+    if (trending.length === 0 || trending.every(a => !a.downloads)) {
+        slider.innerHTML = '<div class="loading">No downloads yet</div>';
+        return;
+    }
+    let html = '';
+    trending.forEach((app, i) => {
+        html += '<div class="top-app-card" onclick="openApp(\'' + app.id + '\')"><div class="img-wrap"><img src="' + app.icon + '"><span class="badge-editor">#' + (i+1) + ' Trending</span></div><h3>' + app.name + '</h3><p>' + (app.downloads || 0) + ' downloads</p></div>';
+    });
+    slider.innerHTML = html;
 }
 
 function renderFeatured(apps) {
@@ -125,18 +120,10 @@ function renderFeatured(apps) {
     if (!slider) return;
     const featured = apps.filter(a => a.featured).slice(0, 5);
     if (featured.length === 0) { slider.innerHTML = '<div class="loading">No featured apps yet</div>'; return; }
-    
-    const colors = ['linear-gradient(135deg, #ff6b6b, #ee5a6f)','linear-gradient(135deg, #ff9966, #ff5e62)','linear-gradient(135deg, #fc5c7d, #6a82fb)'];
-    
     let html = '';
-    featured.forEach((app, i) => {
-        const bgStyle = app.background ? 'background-image: url(\'' + app.background + '\');' : 'background: ' + colors[i % colors.length] + ';';
-        html += '<div class="featured-card" onclick="openApp(\'' + app.id + '\')" style="' + bgStyle + '">';
-        html += '<div class="featured-card-overlay"></div>';
-        html += '<div class="featured-card-info">';
-        html += '<img src="' + app.icon + '">';
-        html += '<div><h3>' + app.name + '</h3><p>' + app.category + '</p></div>';
-        html += '</div></div>';
+    featured.forEach(app => {
+        const bg = app.background ? 'background: url(\'' + app.background + '\') center/cover;' : 'background: linear-gradient(135deg, #ff6b6b, #ee5a6f);';
+        html += '<div class="featured-card" onclick="openApp(\'' + app.id + '\')" style="' + bg + '"><div class="featured-card-info"><img src="' + app.icon + '"><div><h3>' + app.name + '</h3><p>' + app.category + '</p></div></div></div>';
     });
     slider.innerHTML = html;
 }
@@ -146,19 +133,11 @@ function renderTopApps(apps) {
     if (!slider) return;
     const top = apps.filter(a => a.top).slice(0, 10);
     if (top.length === 0) { slider.innerHTML = '<div class="loading">No top apps yet</div>'; return; }
-    
     let html = '';
     top.forEach(app => {
-        html += '<div class="top-app-card" onclick="openApp(\'' + app.id + '\')">';
-        html += '<div class="img-wrap">';
-        html += '<img src="' + app.icon + '">';
-        if (app.editorChoice) html += '<span class="badge-editor">Editor Choice</span>';
-        if (app.paid) html += '<span class="badge-premium">PAID</span>';
-        else html += '<span class="badge-premium">PREMIUM</span>';
-        html += '</div>';
-        html += '<h3>' + app.name + '</h3>';
-        html += '<p>' + app.category + '</p>';
-        html += '</div>';
+        const editorBadge = app.editorChoice ? '<span class="badge-editor">Editor Choice</span>' : '';
+        const paidBadge = app.paid ? '<span class="badge-premium">PAID</span>' : '<span class="badge-premium">PREMIUM</span>';
+        html += '<div class="top-app-card" onclick="openApp(\'' + app.id + '\')"><div class="img-wrap"><img src="' + app.icon + '">' + editorBadge + paidBadge + '</div><h3>' + app.name + '</h3><p>' + app.category + '</p></div>';
     });
     slider.innerHTML = html;
 }
@@ -168,54 +147,84 @@ function renderLatestGames(apps) {
     if (!list) return;
     const games = apps.filter(a => a.type === 'game').sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 6);
     if (games.length === 0) { list.innerHTML = '<div class="loading">No games yet</div>'; return; }
-    
     let html = '';
     games.forEach(app => {
-        html += '<div class="app-list-item" onclick="openApp(\'' + app.id + '\')">';
-        html += '<img src="' + app.icon + '">';
-        html += '<div class="info"><h3>' + app.name + '</h3>';
-        html += '<div class="meta"><span>⭐ ' + (app.rating || '4.0') + '</span><span>•</span><span>' + app.category + '</span></div>';
-        if (app.modInfo) html += '<div class="mod-info">' + app.modInfo + '</div>';
-        html += '</div></div>';
+        html += '<div class="app-list-item" onclick="openApp(\'' + app.id + '\')"><img src="' + app.icon + '"><div class="info"><h3>' + app.name + '</h3><div class="meta"><span>⭐ ' + (app.rating || '4.0') + '</span><span>•</span><span>' + app.category + '</span></div>' + (app.modInfo ? '<div class="mod-info">' + app.modInfo + '</div>' : '') + '</div></div>';
     });
     list.innerHTML = html;
+}
+
+function renderRecentlyViewed(apps) {
+    const slider = document.getElementById('recentlyViewed');
+    if (!slider) return;
+    const recentIds = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    if (recentIds.length === 0) {
+        slider.parentElement.style.display = 'none';
+        return;
+    }
+    const recent = recentIds.map(id => apps.find(a => a.id === id)).filter(a => a).slice(0, 10);
+    if (recent.length === 0) {
+        slider.parentElement.style.display = 'none';
+        return;
+    }
+    let html = '';
+    recent.forEach(app => {
+        html += '<div class="top-app-card" onclick="openApp(\'' + app.id + '\')"><div class="img-wrap"><img src="' + app.icon + '"></div><h3>' + app.name + '</h3><p>' + app.category + '</p></div>';
+    });
+    slider.innerHTML = html;
 }
 
 function renderCollections(collections, allApps) {
     const grid = document.getElementById('collections');
     if (!grid) return;
-    if (collections.length === 0) {
-        grid.innerHTML = '<div class="loading">No collections yet. Create some in admin.</div>';
-        return;
-    }
-    
+    if (collections.length === 0) { grid.innerHTML = '<div class="loading">No collections yet.</div>'; return; }
     let html = '';
     collections.forEach(col => {
         const colApps = (col.appIds || []).map(id => allApps.find(a => a.id === id)).filter(a => a).slice(0, 3);
         const moreCount = Math.max(0, (col.appIds || []).length - 3);
-        html += '<div class="collection-card" style="background-image: url(\'' + col.background + '\');" onclick="window.location.href=\'/collection.html?id=' + col.id + '\'">';
-        html += '<div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.75));"></div>';
-        html += '<h3 style="position:relative;z-index:2;">' + col.title + '</h3>';
-        html += '<div style="position:absolute;bottom:15px;left:15px;display:flex;gap:6px;z-index:2;">';
-        colApps.forEach(a => {
-            html += '<img src="' + a.icon + '" style="width:35px;height:35px;border-radius:8px;border:2px solid #fff;">';
-        });
-        html += '</div>';
-        if (moreCount > 0) html += '<div class="more-count" style="z-index:2;">+' + moreCount + ' more</div>';
-        html += '</div>';
+        let iconsHtml = '';
+        colApps.forEach(a => { iconsHtml += '<img src="' + a.icon + '" style="width:35px;height:35px;border-radius:8px;border:2px solid #fff;">'; });
+        html += '<div class="collection-card" style="background: url(\'' + col.background + '\') center/cover;" onclick="window.location.href=\'/collection.html?id=' + col.id + '\'"><div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.7));"></div><h3 style="position:relative;z-index:2;">' + col.title + '</h3><div style="position:absolute;bottom:15px;left:15px;display:flex;gap:6px;z-index:2;">' + iconsHtml + '</div>' + (moreCount > 0 ? '<div class="more-count" style="z-index:2;">+' + moreCount + ' more</div>' : '') + '</div>';
     });
     grid.innerHTML = html;
 }
 
 function showEmpty() {
-    const sections = ['heroSlider', 'featuredSlider', 'topAppsSlider', 'latestGames', 'collections'];
+    const sections = ['heroSlider', 'trendingSlider', 'featuredSlider', 'topAppsSlider', 'latestGames', 'collections'];
     sections.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.innerHTML = '<div class="loading">No apps uploaded yet. Visit /admin to add apps.</div>';
+        if (el) el.innerHTML = '<div class="loading">No apps yet. Visit /admin to add apps.</div>';
     });
 }
 
-function openApp(id) { window.location.href = '/app.html?id=' + id; }
+function openApp(id) {
+    let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    recent = recent.filter(r => r !== id);
+    recent.unshift(id);
+    if (recent.length > 10) recent = recent.slice(0, 10);
+    localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+    window.location.href = '/app.html?id=' + id;
+}
+
+async function loadFloatingButtons() {
+    try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        const s = data.settings || {};
+        if (!s.showTelegram && !s.showWhatsapp) return;
+        let html = '<div class="floating-buttons">';
+        if (s.showWhatsapp && s.whatsappUrl) {
+            html += '<a href="' + s.whatsappUrl + '" target="_blank" class="float-btn wa" title="' + (s.whatsappText || 'WhatsApp') + '"><i class="fa-brands fa-whatsapp"></i></a>';
+        }
+        if (s.showTelegram && s.telegramUrl) {
+            html += '<a href="' + s.telegramUrl + '" target="_blank" class="float-btn tg" title="' + (s.telegramText || 'Telegram') + '"><i class="fa-brands fa-telegram"></i></a>';
+        }
+        html += '</div>';
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        document.body.appendChild(div.firstChild);
+    } catch (e) {}
+}
 
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('sideMenu');
@@ -227,6 +236,7 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSearchData();
+    loadFloatingButtons();
     const globalSearch = document.getElementById('globalSearch');
     if (globalSearch) {
         globalSearch.addEventListener('input', (e) => performGlobalSearch(e.target.value));

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites - Ultimate Downloads</title>
+    <meta name="monetag" content="a982387c3a54fa1381a25c8713ff5adb">
+    <script src="https://quge5.com/88/tag.min.js" data-zone="244467" async data-cfasync="false"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { background: #1a1a1a !important; color: #fff !important; }
+        .top-header { background: #1a1a1a !important; border-bottom: 1px solid #333; }
+        .menu-icon span { background: #fff !important; }
+        .search-icon { color: #fff !important; }
+        .bottom-nav { background: #1a1a1a !important; }
+        .nav-item { color: #888 !important; }
+        .nav-item.active { color: #7ac142 !important; }
+        .breadcrumb { background: #1a1a1a; padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #333; color: #fff; }
+        .breadcrumb a { color: #7ac142; font-weight: 600; }
+        .breadcrumb .current { color: #ff7a3d; font-weight: 600; }
+        .page-header { background: #1a1a1a; padding: 20px; }
+        .page-header h1 { font-size: 22px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .page-header h1 i { color: #e74c3c; }
+        .page-header p { color: #888; font-size: 13px; margin-top: 5px; }
+        .favs-list { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .fav-item { background: #2a2a2a; border-radius: 12px; padding: 15px; display: flex; gap: 12px; align-items: center; cursor: pointer; }
+        .fav-item img { width: 60px; height: 60px; border-radius: 12px; }
+        .fav-item .info { flex: 1; }
+        .fav-item h3 { color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .fav-item .meta { color: #888; font-size: 13px; }
+        .fav-item .remove-btn { background: #e74c3c; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 12px; }
+        .empty-favs { text-align: center; padding: 80px 20px; color: #888; }
+        .empty-favs i { font-size: 70px; color: #444; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<header class="top-header">
+    <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    <a href="/" class="logo">ULTIMATE<span>DOWNLOADS</span></a>
+    <div class="search-icon" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
+</header>
+
+<div class="search-box" id="searchBox">
+    <input type="text" placeholder="Search...">
+</div>
+
+<div class="side-menu" id="sideMenu">
+    <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/apps.html"><i class="fa-solid fa-mobile-screen"></i> Apps</a>
+    <a href="/games.html"><i class="fa-solid fa-gamepad"></i> Games</a>
+    <a href="/favorites.html"><i class="fa-solid fa-heart"></i> My Favorites</a>
+    <a href="/news.html"><i class="fa-solid fa-fire"></i> News</a>
+    <a href="/browse.html"><i class="fa-solid fa-skull"></i> Browse</a>
+</div>
+
+<div class="breadcrumb"><a href="/">Home</a> &rsaquo; <span class="current">My Favorites</span></div>
+
+<div class="page-header">
+    <h1><i class="fa-solid fa-heart"></i> My Favorites</h1>
+    <p>Your saved apps and games</p>
+</div>
+
+<div class="favs-list" id="favsList">
+    <div class="loading" style="color: #888;">Loading...</div>
+</div>
+
+<nav class="bottom-nav">
+    <a href="/" class="nav-item"><i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span></a>
+    <a href="/apps.html" class="nav-item"><i class="fa-solid fa-mobile-screen nav-icon"></i><span class="nav-label">Apps</span></a>
+    <a href="/games.html" class="nav-item"><i class="fa-solid fa-gamepad nav-icon"></i><span class="nav-label">Games</span></a>
+    <a href="/news.html" class="nav-item"><i class="fa-solid fa-fire nav-icon"></i><span class="nav-label">News</span></a>
+    <a href="/browse.html" class="nav-item"><i class="fa-solid fa-skull nav-icon"></i><span class="nav-label">Browse</span></a>
+</nav>
+
+<script src="/js/main.js"></script>
+<script>
+async function loadFavs() {
+    const favIds = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const list = document.getElementById('favsList');
+    if (favIds.length === 0) {
+        list.innerHTML = '<div class="empty-favs"><i class="fa-solid fa-heart-crack"></i><h2>No Favorites Yet</h2><p>Click the heart icon on any app to save it here</p></div>';
+        return;
+    }
+    try {
+        const res = await fetch('/api/apps');
+        const data = await res.json();
+        const favs = favIds.map(id => data.apps.find(a => a.id === id)).filter(a => a);
+        if (favs.length === 0) {
+            list.innerHTML = '<div class="empty-favs"><i class="fa-solid fa-heart-crack"></i><h2>No Favorites</h2></div>';
+            return;
+        }
+        let html = '';
+        favs.forEach(app => {
+            html += '<div class="fav-item"><img src="' + app.icon + '" onclick="window.location.href=\'/app.html?id=' + app.id + '\'"><div class="info" onclick="window.location.href=\'/app.html?id=' + app.id + '\'"><h3>' + app.name + '</h3><div class="meta">⭐ ' + (app.rating || '4.0') + ' • ' + app.category + '</div></div><button class="remove-btn" onclick="removeFav(\'' + app.id + '\')">Remove</button></div>';
+        });
+        list.innerHTML = html;
+    } catch (e) { list.innerHTML = '<div class="empty-favs">Failed to load</div>'; }
+}
+
+function removeFav(id) {
+    let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+    favs = favs.filter(f => f !== id);
+    localStorage.setItem('favorites', JSON.stringify(favs));
+    loadFavs();
+}
+
+loadFavs();
+</script>
+
+</body>
+</html>

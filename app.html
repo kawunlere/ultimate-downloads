@@ -38,8 +38,9 @@
         .rating-stat { color: #ff7a3d !important; }
         .download-btn-big { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; background: linear-gradient(135deg, #7ac142, #5a9d2e); color: #fff; border: none; border-radius: 30px; font-size: 17px; font-weight: 700; cursor: pointer; text-decoration: none; box-shadow: 0 6px 20px rgba(122,193,66,0.4); }
         .action-row { display: flex; justify-content: center; gap: 30px; margin-top: 20px; padding: 15px 0; }
-        .action-btn { color: #7ac142; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; text-decoration: none; }
+        .action-btn { color: #7ac142; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; text-decoration: none; background: none; border: none; }
         .action-btn.orange { color: #ff7a3d; }
+        .action-btn.red { color: #e74c3c; }
         .info-section-dark { background: #222; padding: 20px; margin-top: 10px; }
         .info-section-dark h3 { font-size: 16px; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .info-section-dark h3 i { color: #ff7a3d; }
@@ -80,6 +81,7 @@
     <a href="/"><i class="fa-solid fa-house"></i> Home</a>
     <a href="/apps.html"><i class="fa-solid fa-mobile-screen"></i> Apps</a>
     <a href="/games.html"><i class="fa-solid fa-gamepad"></i> Games</a>
+    <a href="/favorites.html"><i class="fa-solid fa-heart"></i> My Favorites</a>
     <a href="/news.html"><i class="fa-solid fa-fire"></i> News</a>
     <a href="/browse.html"><i class="fa-solid fa-skull"></i> Browse</a>
 </div>
@@ -96,6 +98,9 @@
 
 <script src="/js/main.js"></script>
 <script>
+let currentAppId = null;
+let currentStarRating = 0;
+
 function formatNum(n) {
     n = parseInt(n) || 0;
     if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
@@ -103,70 +108,70 @@ function formatNum(n) {
     return n;
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function isFavorite(id) {
+    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+    return favs.includes(id);
+}
+
+function toggleFavorite(id) {
+    let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const btn = document.getElementById('favBtn');
+    if (favs.includes(id)) {
+        favs = favs.filter(f => f !== id);
+        if (btn) { btn.classList.remove('red'); btn.classList.add('action-btn'); btn.innerHTML = '<i class="fa-regular fa-heart"></i> Add to Favorites'; }
+    } else {
+        favs.push(id);
+        if (btn) { btn.classList.add('red'); btn.innerHTML = '<i class="fa-solid fa-heart"></i> Saved to Favorites'; }
+    }
+    localStorage.setItem('favorites', JSON.stringify(favs));
 }
 
 async function loadAppDetail() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
+    currentAppId = id;
     const container = document.getElementById('appContent');
-    
-    if (!id) {
-        container.innerHTML = '<div class="not-found"><i class="fa-solid fa-circle-exclamation"></i><h2>No App Selected</h2></div>';
-        return;
-    }
-    
+    if (!id) { container.innerHTML = '<div class="not-found"><i class="fa-solid fa-circle-exclamation"></i><h2>No App Selected</h2></div>'; return; }
     try {
         const res = await fetch('/api/apps');
         const data = await res.json();
         const app = data.apps.find(a => a.id === id);
-        
-        if (!app) {
-            container.innerHTML = '<div class="not-found"><i class="fa-solid fa-circle-exclamation"></i><h2>App Not Found</h2></div>';
-            return;
-        }
-        
+        if (!app) { container.innerHTML = '<div class="not-found"><i class="fa-solid fa-circle-exclamation"></i><h2>App Not Found</h2></div>'; return; }
         document.title = app.name + ' - Ultimate Downloads';
+        
+        let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+        recent = recent.filter(r => r !== id);
+        recent.unshift(id);
+        if (recent.length > 10) recent = recent.slice(0, 10);
+        localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+        
         const related = data.apps.filter(a => a.id !== app.id && a.category === app.category).slice(0, 8);
         const screenshots = app.screenshots ? app.screenshots.split(',').map(s => s.trim()).filter(s => s) : [];
         const bgImage = app.background || app.icon;
         
         let html = '';
-        
         html += '<div class="app-hero-bg" style="background-image: url(\'' + bgImage + '\');">';
-        html += '<div class="app-title-overlay">';
-        html += '<h1>' + app.name + '</h1>';
-        html += '<img src="' + app.icon + '" class="hero-icon-small">';
-        html += '</div></div>';
+        html += '<div class="app-title-overlay"><h1>' + app.name + '</h1><img src="' + app.icon + '" class="hero-icon-small"></div></div>';
         
         const typePage = app.type === 'game' ? 'games' : 'apps';
         const typeName = app.type === 'game' ? 'Games' : 'Apps';
-        html += '<div class="breadcrumb-dark">';
-        html += '<a href="/">Home</a> &rsaquo; <a href="/' + typePage + '.html">' + typeName + '</a> &rsaquo; <span class="current">' + app.name.toUpperCase() + '</span>';
-        html += '</div>';
+        html += '<div class="breadcrumb-dark"><a href="/">Home</a> &rsaquo; <a href="/' + typePage + '.html">' + typeName + '</a> &rsaquo; <span class="current">' + app.name.toUpperCase() + '</span></div>';
         
         html += '<div class="app-info-section">';
-        html += '<div class="app-main-row">';
-        html += '<img src="' + app.icon + '" class="app-main-icon">';
+        html += '<div class="app-main-row"><img src="' + app.icon + '" class="app-main-icon">';
         html += '<div class="app-main-details">';
         
         let titleText = app.name;
         if (app.version) titleText += ' v' + app.version;
         titleText += ' APK';
-        if (app.modInfo) {
-            const firstMod = app.modInfo.split(',')[0].trim();
-            titleText += ' (MOD, ' + firstMod + ')';
-        }
+        if (app.modInfo) { const firstMod = app.modInfo.split(',')[0].trim(); titleText += ' (MOD, ' + firstMod + ')'; }
         html += '<h1>' + titleText + '</h1>';
         
         if (app.developer) html += '<div class="app-developer">' + app.developer + '</div>';
         
         html += '<div class="app-badges">';
         if (app.editorChoice) html += '<span class="badge badge-editor-tag">Editor Choice</span>';
-        if (app.paid) html += '<span class="badge badge-paid-tag">Paid</span>';
-        else html += '<span class="badge badge-free-tag">Free</span>';
+        if (app.paid) html += '<span class="badge badge-paid-tag">Paid</span>'; else html += '<span class="badge badge-free-tag">Free</span>';
         html += '</div></div></div>';
         
         if (app.modInfo) html += '<div class="mod-tag">MOD: ' + app.modInfo + '</div>';
@@ -176,20 +181,22 @@ async function loadAppDetail() {
         html += '<div class="stat-block"><div class="stat-val">' + (app.version || '1.0') + '</div><div class="stat-lbl">Version</div></div>';
         html += '<div class="stat-block"><div class="stat-val">' + (app.size || 'N/A') + '</div><div class="stat-lbl">Size</div></div>';
         html += '<div class="stat-block"><div class="stat-val play-stat">';
-        if (app.playUrl) {
-            html += '<a href="' + app.playUrl + '" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/2560px-Google_Play_Store_badge_EN.svg.png"></a>';
-        } else {
-            html += '<i class="fa-brands fa-google-play" style="color:#7ac142;font-size:22px;"></i>';
-        }
+        if (app.playUrl) html += '<a href="' + app.playUrl + '" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/2560px-Google_Play_Store_badge_EN.svg.png"></a>';
+        else html += '<i class="fa-brands fa-google-play" style="color:#7ac142;font-size:22px;"></i>';
         html += '</div><div class="stat-lbl">Get it on</div></div>';
         html += '<div class="stat-block"><div class="stat-val rating-stat">' + (app.rating || '4.0') + ' &#9733;</div><div class="stat-lbl">' + (formatNum(app.ratingsCount) || '0') + ' ratings</div></div>';
         html += '</div>';
         
         html += '<a href="' + app.download + '" class="download-btn-big" download onclick="trackDownload(\'' + app.id + '\')"><i class="fa-solid fa-download"></i> Download APK</a>';
         
+        const fav = isFavorite(app.id);
+        const favHeart = fav ? '<i class="fa-solid fa-heart"></i> Saved to Favorites' : '<i class="fa-regular fa-heart"></i> Add to Favorites';
+        const favClass = fav ? 'action-btn red' : 'action-btn';
+        
         html += '<div class="action-row">';
-        html += '<a href="javascript:void(0)" onclick="shareApp(\'' + app.name + '\')" class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</a>';
-        html += '<a href="javascript:void(0)" class="action-btn orange"><i class="fa-solid fa-rotate"></i> Request Update</a>';
+        html += '<button id="favBtn" class="' + favClass + '" onclick="toggleFavorite(\'' + app.id + '\')">' + favHeart + '</button>';
+        html += '<button class="action-btn" onclick="shareApp(\'' + app.name + '\')"><i class="fa-solid fa-share-nodes"></i> Share</button>';
+        html += '<button class="action-btn orange"><i class="fa-solid fa-rotate"></i> Request</button>';
         html += '</div></div>';
         
         if (screenshots.length > 0) {
@@ -198,38 +205,95 @@ async function loadAppDetail() {
             html += '</div></div>';
         }
         
-        html += '<div class="info-section-dark"><h3><i class="fa-solid fa-shield-halved"></i> Safety</h3>';
-        html += '<p>&#10003; Scanned &amp; Verified Safe<br>&#10003; Free Download<br>&#10003; No Hidden Cost</p></div>';
+        html += '<div class="info-section-dark"><h3><i class="fa-solid fa-shield-halved"></i> Safety</h3><p><i class="fa-solid fa-check" style="color:#7ac142;"></i> Scanned &amp; Verified Safe<br><i class="fa-solid fa-check" style="color:#7ac142;"></i> Free Download<br><i class="fa-solid fa-check" style="color:#7ac142;"></i> No Hidden Cost</p></div>';
+        
+        html += '<div class="info-section-dark"><h3><i class="fa-solid fa-comments"></i> Reviews</h3>';
+        html += '<div class="review-form">';
+        html += '<h4>Leave a Review</h4>';
+        html += '<input type="text" id="reviewName" placeholder="Your name">';
+        html += '<div class="star-rating" id="starRating">';
+        for (let i = 1; i <= 5; i++) html += '<i class="fa-regular fa-star" data-star="' + i + '" onclick="setStarRating(' + i + ')"></i>';
+        html += '</div>';
+        html += '<textarea id="reviewComment" placeholder="Share your experience..." rows="3"></textarea>';
+        html += '<button class="review-submit" onclick="submitReview()">Post Review</button>';
+        html += '</div>';
+        html += '<div id="reviewsList"><p style="color:#888;text-align:center;padding:10px;">Loading reviews...</p></div>';
+        html += '</div>';
         
         if (related.length > 0) {
             html += '<div class="info-section-dark"><h3><i class="fa-solid fa-thumbs-up"></i> You May Also Like</h3><div class="related-list">';
-            related.forEach(r => {
-                html += '<div class="related-item" onclick="window.location.href=\'/app.html?id=' + r.id + '\'">';
-                html += '<img src="' + r.icon + '"><h4>' + r.name + '</h4></div>';
-            });
+            related.forEach(r => { html += '<div class="related-item" onclick="window.location.href=\'/app.html?id=' + r.id + '\'"><img src="' + r.icon + '"><h4>' + r.name + '</h4></div>'; });
             html += '</div></div>';
         }
         
         container.innerHTML = html;
-        
+        loadReviews(id);
     } catch (error) {
-        container.innerHTML = '<div class="not-found"><i class="fa-solid fa-triangle-exclamation"></i><h2>Failed to load</h2><p>' + error.message + '</p></div>';
+        container.innerHTML = '<div class="not-found"><i class="fa-solid fa-triangle-exclamation"></i><h2>Failed to load</h2></div>';
     }
 }
 
-async function trackDownload(id) {
+function setStarRating(n) {
+    currentStarRating = n;
+    const stars = document.querySelectorAll('#starRating i');
+    stars.forEach((s, i) => {
+        if (i < n) { s.classList.remove('fa-regular'); s.classList.add('fa-solid', 'filled'); }
+        else { s.classList.add('fa-regular'); s.classList.remove('fa-solid', 'filled'); }
+    });
+}
+
+async function submitReview() {
+    const name = document.getElementById('reviewName').value.trim();
+    const comment = document.getElementById('reviewComment').value.trim();
+    if (!name || !comment || currentStarRating === 0) {
+        alert('Please fill all fields and select a star rating');
+        return;
+    }
     try {
-        await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id }) });
+        const res = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ appId: currentAppId, name, comment, rating: currentStarRating })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Review posted!');
+            document.getElementById('reviewName').value = '';
+            document.getElementById('reviewComment').value = '';
+            currentStarRating = 0;
+            setStarRating(0);
+            loadReviews(currentAppId);
+        } else { alert(data.message || 'Failed'); }
+    } catch (e) { alert('Failed to submit'); }
+}
+
+async function loadReviews(appId) {
+    try {
+        const res = await fetch('/api/reviews?appId=' + appId);
+        const data = await res.json();
+        const reviews = data.reviews || [];
+        const list = document.getElementById('reviewsList');
+        if (reviews.length === 0) {
+            list.innerHTML = '<p style="color:#888;text-align:center;padding:15px;">No reviews yet. Be the first!</p>';
+            return;
+        }
+        let html = '';
+        reviews.forEach(r => {
+            const stars = '<i class="fa-solid fa-star"></i>'.repeat(r.rating) + '<i class="fa-regular fa-star"></i>'.repeat(5 - r.rating);
+            const d = new Date(r.createdAt).toLocaleDateString();
+            html += '<div class="review-item"><div class="head"><span class="name">' + r.name + '</span><span class="stars">' + stars + '</span></div><p>' + r.comment + '</p><div class="date">' + d + '</div></div>';
+        });
+        list.innerHTML = html;
     } catch (e) {}
 }
 
+async function trackDownload(id) {
+    try { await fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id }) }); } catch (e) {}
+}
+
 function shareApp(name) {
-    if (navigator.share) {
-        navigator.share({ title: name, url: window.location.href });
-    } else {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Link copied!');
-    }
+    if (navigator.share) { navigator.share({ title: name, url: window.location.href }); }
+    else { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }
 }
 
 loadAppDetail();

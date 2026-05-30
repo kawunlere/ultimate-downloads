@@ -4,139 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Apps - Ultimate Downloads</title>
-<script src="https://quge5.com/88/tag.min.js" data-zone="244467" async data-cfasync="false"></script>
+    <meta name="monetag" content="a982387c3a54fa1381a25c8713ff5adb">
+    <script src="https://quge5.com/88/tag.min.js" data-zone="244467" async data-cfasync="false"></script>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        .breadcrumb {
-            background: #fff;
-            padding: 12px 20px;
-            font-size: 14px;
-            border-bottom: 1px solid #f0f0f0;
-        }
+        body { background: #1a1a1a !important; color: #fff !important; }
+        .top-header { background: #1a1a1a !important; border-bottom: 1px solid #333; }
+        .menu-icon span { background: #fff !important; }
+        .search-icon { color: #fff !important; }
+        .bottom-nav { background: #1a1a1a !important; }
+        .nav-item { color: #888 !important; }
+        .nav-item.active { color: #7ac142 !important; }
+        .breadcrumb { background: #1a1a1a; padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #333; color: #fff; }
         .breadcrumb a { color: #7ac142; font-weight: 600; }
         .breadcrumb .current { color: #ff7a3d; font-weight: 600; }
-        
-        .page-header {
-            background: #fff;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .page-header h1 {
-            font-size: 20px;
-            font-weight: 800;
-        }
-        
-        .page-header .count {
-            color: #888;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .sort-dropdown {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            background: #fff;
-            font-size: 13px;
-            font-weight: 600;
-            outline: none;
-        }
-        
-        .category-filter {
-            background: #fff;
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        
+        .page-header { background: #1a1a1a; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 22px; font-weight: 800; color: #fff; }
+        .page-header .count { color: #888; font-size: 14px; font-weight: 500; }
+        .sort-dropdown { padding: 8px 15px; border: 1px solid #444; border-radius: 25px; background: #2a2a2a; color: #fff; font-size: 13px; font-weight: 600; outline: none; }
+        .category-filter { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
         .category-filter::-webkit-scrollbar { display: none; }
-        
-        .filter-chip {
-            padding: 8px 18px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            background: #fff;
-            font-size: 13px;
-            font-weight: 600;
-            color: #555;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .filter-chip.active {
-            background: #7ac142;
-            color: #fff;
-            border-color: #7ac142;
-        }
-        
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 15px;
-        }
-        
-        .grid-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-        }
-        
-        .grid-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-        }
-        
-        .grid-card img {
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
-            object-fit: cover;
-            margin-bottom: 10px;
-            background: #f0f0f0;
-        }
-        
-        .grid-card h3 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .grid-card p {
-            font-size: 12px;
-            color: #888;
-        }
-        
-        @media (min-width: 768px) {
-            .apps-grid { grid-template-columns: repeat(4, 1fr); }
-        }
+        .filter-chip { padding: 8px 18px; border: 1px solid #444; border-radius: 25px; background: #2a2a2a; font-size: 13px; font-weight: 600; color: #ccc; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .filter-chip.active { background: #7ac142; color: #fff; border-color: #7ac142; }
+        .apps-bg-grid { padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .app-bg-card { position: relative; height: 200px; border-radius: 15px; overflow: hidden; cursor: pointer; background: #2a2a2a; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s; }
+        .app-bg-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        .app-bg-card .bg-img { position: absolute; inset: 0; background-size: cover; background-position: center; }
+        .app-bg-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.9) 100%); }
+        .app-bg-card .content { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; z-index: 2; display: flex; align-items: center; gap: 10px; }
+        .app-bg-card .content img { width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        .app-bg-card .content .info h3 { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+        .app-bg-card .content .info p { font-size: 11px; color: #7ac142; margin-top: 2px; }
+        .app-bg-card .top-badges { position: absolute; top: 10px; left: 10px; display: flex; gap: 5px; z-index: 2; }
+        .top-badges .mini-badge { padding: 3px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; color: #fff; }
+        .mini-editor { background: #ff7a3d; }
+        .mini-paid { background: #7ac142; }
+        @media (min-width: 768px) { .apps-bg-grid { grid-template-columns: repeat(4, 1fr); } }
     </style>
 </head>
 <body>
 
 <header class="top-header">
-    <div class="menu-icon" onclick="toggleMenu()">
-        <span></span><span></span><span></span>
-    </div>
+    <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
     <a href="/" class="logo">ULTIMATE<span>DOWNLOADS</span></a>
-    <div class="search-icon" onclick="toggleSearch()">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </div>
+    <div class="search-icon" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
 </header>
 
 <div class="search-box" id="searchBox">
@@ -152,13 +64,11 @@
 </div>
 
 <div class="breadcrumb">
-    <a href="/">Home</a> › <span class="current">Apps</span>
+    <a href="/">Home</a> &rsaquo; <span class="current">Apps</span>
 </div>
 
 <div class="page-header">
-    <div>
-        <h1>Apps <span class="count" id="appCount">(0)</span></h1>
-    </div>
+    <div><h1>Apps <span class="count" id="appCount">(0)</span></h1></div>
     <select class="sort-dropdown" id="sortBy" onchange="renderApps()">
         <option value="newest">Newest</option>
         <option value="name">Name</option>
@@ -170,31 +80,16 @@
     <div class="filter-chip active" onclick="filterByCategory('all', this)">All</div>
 </div>
 
-<div class="apps-grid" id="appsGrid">
-    <div class="loading" style="grid-column: 1/-1;">Loading apps...</div>
+<div class="apps-bg-grid" id="appsGrid">
+    <div class="loading" style="grid-column: 1/-1; color: #888;">Loading apps...</div>
 </div>
 
 <nav class="bottom-nav">
-    <a href="/" class="nav-item">
-        <i class="fa-solid fa-house nav-icon"></i>
-        <span class="nav-label">Home</span>
-    </a>
-    <a href="/apps.html" class="nav-item active">
-        <i class="fa-solid fa-mobile-screen nav-icon"></i>
-        <span class="nav-label">Apps</span>
-    </a>
-    <a href="/games.html" class="nav-item">
-        <i class="fa-solid fa-gamepad nav-icon"></i>
-        <span class="nav-label">Games</span>
-    </a>
-    <a href="/news.html" class="nav-item">
-        <i class="fa-solid fa-fire nav-icon"></i>
-        <span class="nav-label">News</span>
-    </a>
-    <a href="/browse.html" class="nav-item">
-        <i class="fa-solid fa-skull nav-icon"></i>
-        <span class="nav-label">Browse</span>
-    </a>
+    <a href="/" class="nav-item"><i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span></a>
+    <a href="/apps.html" class="nav-item active"><i class="fa-solid fa-mobile-screen nav-icon"></i><span class="nav-label">Apps</span></a>
+    <a href="/games.html" class="nav-item"><i class="fa-solid fa-gamepad nav-icon"></i><span class="nav-label">Games</span></a>
+    <a href="/news.html" class="nav-item"><i class="fa-solid fa-fire nav-icon"></i><span class="nav-label">News</span></a>
+    <a href="/browse.html" class="nav-item"><i class="fa-solid fa-skull nav-icon"></i><span class="nav-label">Browse</span></a>
 </nav>
 
 <script src="/js/main.js"></script>
@@ -208,12 +103,11 @@ async function loadAllApps() {
         const response = await fetch('/api/apps');
         const data = await response.json();
         allApps = (data.apps || []).filter(a => a.type === 'app');
-        
-        document.getElementById('appCount').textContent = `(${allApps.length})`;
+        document.getElementById('appCount').textContent = '(' + allApps.length + ')';
         buildCategoryFilter();
         renderApps();
     } catch (error) {
-        document.getElementById('appsGrid').innerHTML = '<div class="loading" style="grid-column: 1/-1;">Failed to load apps</div>';
+        document.getElementById('appsGrid').innerHTML = '<div class="loading" style="grid-column: 1/-1; color: #888;">Failed to load apps</div>';
     }
 }
 
@@ -239,39 +133,37 @@ function filterByCategory(cat, element) {
 
 function renderApps() {
     let filtered = allApps;
-    
-    if (currentCategory !== 'all') {
-        filtered = filtered.filter(a => a.category === currentCategory);
-    }
-    
-    if (currentSearch) {
-        filtered = filtered.filter(a => 
-            a.name.toLowerCase().includes(currentSearch.toLowerCase())
-        );
-    }
+    if (currentCategory !== 'all') filtered = filtered.filter(a => a.category === currentCategory);
+    if (currentSearch) filtered = filtered.filter(a => a.name.toLowerCase().includes(currentSearch.toLowerCase()));
     
     const sortBy = document.getElementById('sortBy').value;
-    if (sortBy === 'name') {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === 'rating') {
-        filtered.sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0));
-    } else {
-        filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    }
+    if (sortBy === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sortBy === 'rating') filtered.sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0));
+    else filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     
     const grid = document.getElementById('appsGrid');
     if (filtered.length === 0) {
-        grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;">No apps found</div>';
+        grid.innerHTML = '<div class="loading" style="grid-column: 1/-1; color: #888;">No apps found</div>';
         return;
     }
     
-    grid.innerHTML = filtered.map(app => `
-        <div class="grid-card" onclick="openApp('${app.id}')">
-            <img src="${app.icon}" alt="${app.name}" onerror="this.src='https://via.placeholder.com/70/7ac142/ffffff?text=APP'">
-            <h3>${app.name}</h3>
-            <p>${app.category}</p>
-        </div>
-    `).join('');
+    let html = '';
+    filtered.forEach(app => {
+        const bg = app.background || app.icon;
+        let badges = '';
+        if (app.editorChoice) badges += '<span class="mini-badge mini-editor">Editor</span>';
+        if (app.paid) badges += '<span class="mini-badge mini-paid">Paid</span>';
+        
+        html += '<div class="app-bg-card" onclick="window.location.href=\'/app.html?id=' + app.id + '\'">';
+        html += '<div class="bg-img" style="background-image: url(\'' + bg + '\');"></div>';
+        html += '<div class="overlay"></div>';
+        if (badges) html += '<div class="top-badges">' + badges + '</div>';
+        html += '<div class="content">';
+        html += '<img src="' + app.icon + '">';
+        html += '<div class="info"><h3>' + app.name + '</h3><p>' + app.category + '</p></div>';
+        html += '</div></div>';
+    });
+    grid.innerHTML = html;
 }
 
 document.getElementById('searchInput').addEventListener('input', (e) => {

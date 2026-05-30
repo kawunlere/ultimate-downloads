@@ -4,34 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Games - Ultimate Downloads</title>
-<script src="https://quge5.com/88/tag.min.js" data-zone="244467" async data-cfasync="false"></script>
+    <meta name="monetag" content="a982387c3a54fa1381a25c8713ff5adb">
+    <script src="https://quge5.com/88/tag.min.js" data-zone="244467" async data-cfasync="false"></script>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        .breadcrumb { background: #fff; padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #f0f0f0; }
+        body { background: #1a1a1a !important; color: #fff !important; }
+        .top-header { background: #1a1a1a !important; border-bottom: 1px solid #333; }
+        .menu-icon span { background: #fff !important; }
+        .search-icon { color: #fff !important; }
+        .bottom-nav { background: #1a1a1a !important; }
+        .nav-item { color: #888 !important; }
+        .nav-item.active { color: #7ac142 !important; }
+        .breadcrumb { background: #1a1a1a; padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #333; color: #fff; }
         .breadcrumb a { color: #7ac142; font-weight: 600; }
         .breadcrumb .current { color: #ff7a3d; font-weight: 600; }
-        .page-header { background: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .page-header h1 { font-size: 20px; font-weight: 800; }
+        .page-header { background: #1a1a1a; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 22px; font-weight: 800; color: #fff; }
         .page-header .count { color: #888; font-size: 14px; font-weight: 500; }
-        .sort-dropdown { padding: 8px 15px; border: 1px solid #ddd; border-radius: 25px; background: #fff; font-size: 13px; font-weight: 600; outline: none; }
-        .category-filter { background: #fff; padding: 15px 20px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .sort-dropdown { padding: 8px 15px; border: 1px solid #444; border-radius: 25px; background: #2a2a2a; color: #fff; font-size: 13px; font-weight: 600; outline: none; }
+        .category-filter { background: #1a1a1a; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
         .category-filter::-webkit-scrollbar { display: none; }
-        .filter-chip { padding: 8px 18px; border: 1px solid #ddd; border-radius: 25px; background: #fff; font-size: 13px; font-weight: 600; color: #555; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .filter-chip { padding: 8px 18px; border: 1px solid #444; border-radius: 25px; background: #2a2a2a; font-size: 13px; font-weight: 600; color: #ccc; white-space: nowrap; cursor: pointer; transition: 0.2s; }
         .filter-chip.active { background: #7ac142; color: #fff; border-color: #7ac142; }
-        .games-list { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .games-bg-grid { padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .game-bg-card { position: relative; height: 220px; border-radius: 15px; overflow: hidden; cursor: pointer; background: #2a2a2a; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s; }
+        .game-bg-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        .game-bg-card .bg-img { position: absolute; inset: 0; background-size: cover; background-position: center; }
+        .game-bg-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.9) 100%); }
+        .game-bg-card .content { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; z-index: 2; }
+        .game-bg-card .content .top-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .game-bg-card .content img { width: 45px; height: 45px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); flex-shrink: 0; }
+        .game-bg-card .content h3 { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; }
+        .game-bg-card .content .meta { font-size: 11px; color: #ccc; display: flex; gap: 6px; align-items: center; }
+        .game-bg-card .content .meta .rating { color: #ff7a3d; font-weight: 700; }
+        .game-bg-card .content .mod { font-size: 11px; color: #ff7a3d; font-weight: 600; margin-top: 4px; }
+        .game-bg-card .top-badges { position: absolute; top: 10px; left: 10px; display: flex; gap: 5px; z-index: 2; }
+        .top-badges .mini-badge { padding: 3px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; color: #fff; }
+        .mini-editor { background: #ff7a3d; }
+        .mini-paid { background: #7ac142; }
+        @media (min-width: 768px) { .games-bg-grid { grid-template-columns: repeat(4, 1fr); } }
     </style>
 </head>
 <body>
 
 <header class="top-header">
-    <div class="menu-icon" onclick="toggleMenu()">
-        <span></span><span></span><span></span>
-    </div>
+    <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
     <a href="/" class="logo">ULTIMATE<span>DOWNLOADS</span></a>
-    <div class="search-icon" onclick="toggleSearch()">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </div>
+    <div class="search-icon" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
 </header>
 
 <div class="search-box" id="searchBox">
@@ -47,7 +67,7 @@
 </div>
 
 <div class="breadcrumb">
-    <a href="/">Home</a> › <span class="current">Games</span>
+    <a href="/">Home</a> &rsaquo; <span class="current">Games</span>
 </div>
 
 <div class="page-header">
@@ -63,26 +83,16 @@
     <div class="filter-chip active" onclick="filterByCategory('all', this)">All</div>
 </div>
 
-<div class="games-list" id="gamesList">
-    <div class="loading">Loading games...</div>
+<div class="games-bg-grid" id="gamesList">
+    <div class="loading" style="grid-column: 1/-1; color: #888;">Loading games...</div>
 </div>
 
 <nav class="bottom-nav">
-    <a href="/" class="nav-item">
-        <i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span>
-    </a>
-    <a href="/apps.html" class="nav-item">
-        <i class="fa-solid fa-mobile-screen nav-icon"></i><span class="nav-label">Apps</span>
-    </a>
-    <a href="/games.html" class="nav-item active">
-        <i class="fa-solid fa-gamepad nav-icon"></i><span class="nav-label">Games</span>
-    </a>
-    <a href="/news.html" class="nav-item">
-        <i class="fa-solid fa-fire nav-icon"></i><span class="nav-label">News</span>
-    </a>
-    <a href="/browse.html" class="nav-item">
-        <i class="fa-solid fa-skull nav-icon"></i><span class="nav-label">Browse</span>
-    </a>
+    <a href="/" class="nav-item"><i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span></a>
+    <a href="/apps.html" class="nav-item"><i class="fa-solid fa-mobile-screen nav-icon"></i><span class="nav-label">Apps</span></a>
+    <a href="/games.html" class="nav-item active"><i class="fa-solid fa-gamepad nav-icon"></i><span class="nav-label">Games</span></a>
+    <a href="/news.html" class="nav-item"><i class="fa-solid fa-fire nav-icon"></i><span class="nav-label">News</span></a>
+    <a href="/browse.html" class="nav-item"><i class="fa-solid fa-skull nav-icon"></i><span class="nav-label">Browse</span></a>
 </nav>
 
 <script src="/js/main.js"></script>
@@ -96,11 +106,11 @@ async function loadAllGames() {
         const response = await fetch('/api/apps');
         const data = await response.json();
         allGames = (data.apps || []).filter(a => a.type === 'game');
-        document.getElementById('gameCount').textContent = `(${allGames.length})`;
+        document.getElementById('gameCount').textContent = '(' + allGames.length + ')';
         buildCategoryFilter();
         renderGames();
     } catch (error) {
-        document.getElementById('gamesList').innerHTML = '<div class="loading">Failed to load games</div>';
+        document.getElementById('gamesList').innerHTML = '<div class="loading" style="grid-column: 1/-1; color: #888;">Failed to load</div>';
     }
 }
 
@@ -136,24 +146,28 @@ function renderGames() {
     
     const list = document.getElementById('gamesList');
     if (filtered.length === 0) {
-        list.innerHTML = '<div class="loading">No games found</div>';
+        list.innerHTML = '<div class="loading" style="grid-column: 1/-1; color: #888;">No games found</div>';
         return;
     }
     
-    list.innerHTML = filtered.map(game => `
-        <div class="app-list-item" onclick="openApp('${game.id}')">
-            <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://via.placeholder.com/60/7ac142/ffffff?text=G'">
-            <div class="info">
-                <h3>${game.name}</h3>
-                <div class="meta">
-                    <span>⭐ ${game.rating || '4.0'}</span>
-                    <span>•</span>
-                    <span>${game.category}</span>
-                </div>
-                ${game.modInfo ? `<div class="mod-info">${game.modInfo}</div>` : ''}
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    filtered.forEach(game => {
+        const bg = game.background || game.icon;
+        let badges = '';
+        if (game.editorChoice) badges += '<span class="mini-badge mini-editor">Editor</span>';
+        if (game.paid) badges += '<span class="mini-badge mini-paid">Paid</span>';
+        
+        html += '<div class="game-bg-card" onclick="window.location.href=\'/app.html?id=' + game.id + '\'">';
+        html += '<div class="bg-img" style="background-image: url(\'' + bg + '\');"></div>';
+        html += '<div class="overlay"></div>';
+        if (badges) html += '<div class="top-badges">' + badges + '</div>';
+        html += '<div class="content">';
+        html += '<div class="top-row"><img src="' + game.icon + '"><div><h3>' + game.name + '</h3></div></div>';
+        html += '<div class="meta"><span class="rating">&#9733; ' + (game.rating || '4.0') + '</span> &bull; <span>' + game.category + '</span></div>';
+        if (game.modInfo) html += '<div class="mod">' + game.modInfo + '</div>';
+        html += '</div></div>';
+    });
+    list.innerHTML = html;
 }
 
 document.getElementById('searchInput').addEventListener('input', (e) => {

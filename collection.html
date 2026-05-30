@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection - Ultimate Downloads</title>
+    <meta name="monetag" content="a982387c3a54fa1381a25c8713ff5adb">
+    <script src="https://quge5.com/88/tag.min.js" data-zone="244467" async data-cfasync="false"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .collection-banner { height: 200px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 25px; }
+        .collection-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.8)); }
+        .collection-banner-content { position: relative; z-index: 2; color: #fff; }
+        .collection-banner h1 { font-size: 26px; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+        .collection-banner p { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+        .apps-list-wrap { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+    </style>
+</head>
+<body>
+
+<header class="top-header">
+    <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    <a href="/" class="logo">ULTIMATE<span>DOWNLOADS</span></a>
+    <div class="search-icon" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
+</header>
+
+<div class="search-box" id="searchBox">
+    <input type="text" placeholder="Search..." id="globalSearch">
+    <div class="search-results" id="searchResults"></div>
+</div>
+
+<div class="side-menu" id="sideMenu">
+    <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/apps.html"><i class="fa-solid fa-mobile-screen"></i> Apps</a>
+    <a href="/games.html"><i class="fa-solid fa-gamepad"></i> Games</a>
+    <a href="/news.html"><i class="fa-solid fa-fire"></i> News</a>
+    <a href="/browse.html"><i class="fa-solid fa-skull"></i> Browse</a>
+</div>
+
+<div id="collectionContent"><div class="loading" style="padding: 50px;">Loading...</div></div>
+
+<nav class="bottom-nav">
+    <a href="/" class="nav-item"><i class="fa-solid fa-house nav-icon"></i><span class="nav-label">Home</span></a>
+    <a href="/apps.html" class="nav-item"><i class="fa-solid fa-mobile-screen nav-icon"></i><span class="nav-label">Apps</span></a>
+    <a href="/games.html" class="nav-item"><i class="fa-solid fa-gamepad nav-icon"></i><span class="nav-label">Games</span></a>
+    <a href="/news.html" class="nav-item"><i class="fa-solid fa-fire nav-icon"></i><span class="nav-label">News</span></a>
+    <a href="/browse.html" class="nav-item"><i class="fa-solid fa-skull nav-icon"></i><span class="nav-label">Browse</span></a>
+</nav>
+
+<script src="/js/main.js"></script>
+<script>
+async function loadCollection() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const container = document.getElementById('collectionContent');
+    if (!id) { container.innerHTML = '<div class="loading">No collection selected</div>'; return; }
+    try {
+        const [colsRes, appsRes] = await Promise.all([fetch('/api/collections'), fetch('/api/apps')]);
+        const colsData = await colsRes.json();
+        const appsData = await appsRes.json();
+        const col = colsData.collections.find(c => c.id === id);
+        if (!col) { container.innerHTML = '<div class="loading">Collection not found</div>'; return; }
+        document.title = `${col.title} - Ultimate Downloads`;
+        const colApps = (col.appIds || []).map(aid => appsData.apps.find(a => a.id === aid)).filter(a => a);
+        container.innerHTML = `
+            <div class="collection-banner" style="background-image: url('${col.background}');">
+                <div class="collection-banner-content">
+                    <h1>${col.title}</h1>
+                    ${col.subtitle ? `<p>${col.subtitle}</p>` : ''}
+                    <p>${colApps.length} apps</p>
+                </div>
+            </div>
+            <div class="apps-list-wrap">
+                ${colApps.length === 0 ? '<div class="loading">No apps in this collection</div>' :
+                colApps.map(app => `
+                    <div class="app-list-item" onclick="window.location.href='/app.html?id=${app.id}'">
+                        <img src="${app.icon}" onerror="this.src='https://via.placeholder.com/60/7ac142/ffffff?text=A'">
+                        <div class="info">
+                            <h3>${app.name}</h3>
+                            <div class="meta">
+                                <span>⭐ ${app.rating || '4.0'}</span>
+                                <span>•</span>
+                                <span>${app.category}</span>
+                            </div>
+                            ${app.modInfo ? `<div class="mod-info">${app.modInfo}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } catch (error) {
+        container.innerHTML = '<div class="loading">Failed to load</div>';
+    }
+}
+loadCollection();
+</script>
+
+</body>
+</html>

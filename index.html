@@ -19,7 +19,21 @@
 <header class="top-header">
     <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
     <a href="/" class="logo">ULTIMATE<span>DOWNLOADS</span></a>
-    <div class="search-icon" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
+    <div style="display: flex; align-items: center;">
+        <div class="dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></div>
+        <div class="notif-icon" onclick="toggleNotifications()" style="position: relative;">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="notif-header">
+                    <h4>Notifications</h4>
+                    <button onclick="markNotificationsRead()">Mark all read</button>
+                </div>
+                <div id="notifList"><div class="notif-empty">Loading...</div></div>
+            </div>
+        </div>
+        <div class="search-icon" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
+    </div>
 </header>
 
 <div class="search-box" id="searchBox">
@@ -72,7 +86,7 @@
     </section>
 
     <div class="subscribe-box">
-        <h3>📧 Stay Updated</h3>
+        <h3><i class="fa-solid fa-envelope"></i> Stay Updated</h3>
         <p>Get notified when new premium apps and games are added</p>
         <form class="subscribe-form" onsubmit="subscribeEmail(event)">
             <input type="email" id="subEmail" placeholder="Your email" required>

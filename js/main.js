@@ -14,6 +14,75 @@ function toggleSearch() {
     }
 }
 
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+    const btn = document.querySelector('.dark-toggle i');
+    if (btn) btn.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+
+function loadDarkMode() {
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('.dark-toggle i');
+        if (btn) btn.className = 'fa-solid fa-sun';
+    }
+}
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notifDropdown');
+    if (dropdown) dropdown.classList.toggle('active');
+    markNotificationsRead();
+}
+
+async function loadNotifications() {
+    try {
+        const res = await fetch('/api/apps');
+        const data = await res.json();
+        const apps = data.apps || [];
+        const recent = apps.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 8);
+        
+        const lastSeen = parseInt(localStorage.getItem('lastNotifSeen') || '0');
+        const unreadCount = recent.filter(a => (a.createdAt || 0) > lastSeen).length;
+        
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+            if (unreadCount > 0) { badge.textContent = unreadCount; badge.style.display = 'block'; }
+            else { badge.style.display = 'none'; }
+        }
+        
+        const list = document.getElementById('notifList');
+        if (!list) return;
+        if (recent.length === 0) {
+            list.innerHTML = '<div class="notif-empty"><i class="fa-solid fa-bell-slash" style="font-size:30px;color:#ddd;display:block;margin-bottom:10px;"></i>No notifications yet</div>';
+            return;
+        }
+        let html = '';
+        recent.forEach(app => {
+            const timeAgo = getTimeAgo(app.createdAt);
+            html += '<div class="notif-item" onclick="window.location.href=\'/app.html?id=' + app.id + '\'"><img src="' + app.icon + '"><div class="notif-content"><h5>New: ' + app.name + '</h5><p>' + app.category + ' • ' + timeAgo + '</p></div></div>';
+        });
+        list.innerHTML = html;
+    } catch (e) {}
+}
+
+function getTimeAgo(timestamp) {
+    if (!timestamp) return 'Recently';
+    const diff = Math.floor((Date.now() - timestamp) / 1000);
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff/86400) + 'd ago';
+    return new Date(timestamp).toLocaleDateString();
+}
+
+function markNotificationsRead() {
+    localStorage.setItem('lastNotifSeen', Date.now().toString());
+    const badge = document.getElementById('notifBadge');
+    if (badge) badge.style.display = 'none';
+}
+
 let allSearchData = { apps: [], news: [] };
 
 async function loadSearchData() {
@@ -43,7 +112,7 @@ function performGlobalSearch(query) {
         html += '<div class="search-result-item" onclick="window.location.href=\'/app.html?id=' + app.id + '\'"><img src="' + app.icon + '"><div class="info"><h4>' + app.name + '</h4><p>' + (app.type === 'game' ? '🎮' : '📱') + ' ' + app.category + '</p></div></div>';
     });
     matchedNews.forEach(n => {
-        html += '<div class="search-result-item" onclick="window.location.href=\'/news-detail.html?id=' + n.id + '\'"><div style="width:40px;height:40px;border-radius:10px;background:' + (n.color || '#7ac142') + ';display:flex;align-items:center;justify-content:center;color:#fff;"><i class="fa-solid fa-newspaper"></i></div><div class="info"><h4>' + n.title + '</h4><p>📰 News</p></div></div>';
+        html += '<div class="search-result-item" onclick="window.location.href=\'/news-detail.html?id=' + n.id + '\'"><div style="width:40px;height:40px;border-radius:10px;background:' + (n.color || '#7ac142') + ';display:flex;align-items:center;justify-content:center;color:#fff;"><i class="fa-solid fa-newspaper"></i></div><div class="info"><h4>' + n.title + '</h4><p>News</p></div></div>';
     });
     results.innerHTML = html;
     results.classList.add('active');
@@ -63,7 +132,7 @@ function renderHeroSlider(apps) {
     featured.forEach((app, i) => {
         const bgStyle = app.background ? 'background: url(\'' + app.background + '\') center/cover;' : 'background: ' + colors[i % colors.length] + ';';
         const overlay = app.background ? '<div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3));"></div>' : '';
-        html += '<div class="hero-slide ' + (i === 0 ? 'active' : '') + '" style="' + bgStyle + '" onclick="openApp(\'' + app.id + '\')">' + overlay + '<div class="hero-slide-content"><span class="tag">⭐ FEATURED</span><h2>' + app.name + '</h2><p>' + app.category + ' • ' + (app.modInfo || 'Premium Unlocked') + '</p><span class="btn-hero"><i class="fa-solid fa-download"></i> Download</span></div><img src="' + app.icon + '" class="hero-slide-icon"></div>';
+        html += '<div class="hero-slide ' + (i === 0 ? 'active' : '') + '" style="' + bgStyle + '" onclick="openApp(\'' + app.id + '\')">' + overlay + '<div class="hero-slide-content"><span class="tag"><i class="fa-solid fa-star"></i> FEATURED</span><h2>' + app.name + '</h2><p>' + app.category + ' • ' + (app.modInfo || 'Premium Unlocked') + '</p><span class="btn-hero"><i class="fa-solid fa-download"></i> Download</span></div><img src="' + app.icon + '" class="hero-slide-icon"></div>';
     });
     slider.innerHTML = html;
     let dotsHtml = '';
@@ -149,7 +218,7 @@ function renderLatestGames(apps) {
     if (games.length === 0) { list.innerHTML = '<div class="loading">No games yet</div>'; return; }
     let html = '';
     games.forEach(app => {
-        html += '<div class="app-list-item" onclick="openApp(\'' + app.id + '\')"><img src="' + app.icon + '"><div class="info"><h3>' + app.name + '</h3><div class="meta"><span>⭐ ' + (app.rating || '4.0') + '</span><span>•</span><span>' + app.category + '</span></div>' + (app.modInfo ? '<div class="mod-info">' + app.modInfo + '</div>' : '') + '</div></div>';
+        html += '<div class="app-list-item" onclick="openApp(\'' + app.id + '\')"><img src="' + app.icon + '"><div class="info"><h3>' + app.name + '</h3><div class="meta"><span><i class="fa-solid fa-star" style="color:#ff7a3d;"></i> ' + (app.rating || '4.0') + '</span><span>•</span><span>' + app.category + '</span></div>' + (app.modInfo ? '<div class="mod-info">' + app.modInfo + '</div>' : '') + '</div></div>';
     });
     list.innerHTML = html;
 }
@@ -158,15 +227,9 @@ function renderRecentlyViewed(apps) {
     const slider = document.getElementById('recentlyViewed');
     if (!slider) return;
     const recentIds = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-    if (recentIds.length === 0) {
-        slider.parentElement.style.display = 'none';
-        return;
-    }
+    if (recentIds.length === 0) { if (slider.parentElement) slider.parentElement.style.display = 'none'; return; }
     const recent = recentIds.map(id => apps.find(a => a.id === id)).filter(a => a).slice(0, 10);
-    if (recent.length === 0) {
-        slider.parentElement.style.display = 'none';
-        return;
-    }
+    if (recent.length === 0) { if (slider.parentElement) slider.parentElement.style.display = 'none'; return; }
     let html = '';
     recent.forEach(app => {
         html += '<div class="top-app-card" onclick="openApp(\'' + app.id + '\')"><div class="img-wrap"><img src="' + app.icon + '"></div><h3>' + app.name + '</h3><p>' + app.category + '</p></div>';
@@ -213,12 +276,8 @@ async function loadFloatingButtons() {
         const s = data.settings || {};
         if (!s.showTelegram && !s.showWhatsapp) return;
         let html = '<div class="floating-buttons">';
-        if (s.showWhatsapp && s.whatsappUrl) {
-            html += '<a href="' + s.whatsappUrl + '" target="_blank" class="float-btn wa" title="' + (s.whatsappText || 'WhatsApp') + '"><i class="fa-brands fa-whatsapp"></i></a>';
-        }
-        if (s.showTelegram && s.telegramUrl) {
-            html += '<a href="' + s.telegramUrl + '" target="_blank" class="float-btn tg" title="' + (s.telegramText || 'Telegram') + '"><i class="fa-brands fa-telegram"></i></a>';
-        }
+        if (s.showWhatsapp && s.whatsappUrl) html += '<a href="' + s.whatsappUrl + '" target="_blank" class="float-btn wa"><i class="fa-brands fa-whatsapp"></i></a>';
+        if (s.showTelegram && s.telegramUrl) html += '<a href="' + s.telegramUrl + '" target="_blank" class="float-btn tg"><i class="fa-brands fa-telegram"></i></a>';
         html += '</div>';
         const div = document.createElement('div');
         div.innerHTML = html;
@@ -232,11 +291,18 @@ document.addEventListener('click', (e) => {
     if (menu && menu.classList.contains('active') && !menu.contains(e.target) && !menuIcon.contains(e.target)) {
         menu.classList.remove('active');
     }
+    const notif = document.getElementById('notifDropdown');
+    const notifIcon = document.querySelector('.notif-icon');
+    if (notif && notif.classList.contains('active') && !notif.contains(e.target) && notifIcon && !notifIcon.contains(e.target)) {
+        notif.classList.remove('active');
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadDarkMode();
     loadSearchData();
     loadFloatingButtons();
+    loadNotifications();
     const globalSearch = document.getElementById('globalSearch');
     if (globalSearch) {
         globalSearch.addEventListener('input', (e) => performGlobalSearch(e.target.value));

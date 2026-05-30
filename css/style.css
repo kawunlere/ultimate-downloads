@@ -224,3 +224,53 @@ footer { text-align: center; padding: 20px; color: #888; font-size: 13px; backgr
     .collection-grid { grid-template-columns: repeat(3, 1fr); }
     main { max-width: 800px; margin: 0 auto; }
 }
+
+/* NOTIFICATION BELL */
+.notif-icon { position: relative; cursor: pointer; padding: 5px; color: #555; margin-right: 8px; }
+.notif-icon i { font-size: 18px; }
+.notif-badge { position: absolute; top: 0; right: 0; background: #e74c3c; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; min-width: 16px; text-align: center; }
+.notif-dropdown { display: none; position: absolute; top: 100%; right: 10px; width: 320px; max-width: 90vw; max-height: 400px; overflow-y: auto; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 200; }
+.notif-dropdown.active { display: block; }
+.notif-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.notif-header h4 { font-size: 15px; color: #1a1a1a; }
+.notif-header button { background: none; border: none; color: #7ac142; font-size: 12px; cursor: pointer; font-weight: 600; }
+.notif-item { padding: 12px 15px; border-bottom: 1px solid #f5f5f5; display: flex; gap: 10px; cursor: pointer; transition: 0.2s; }
+.notif-item:hover { background: #f9f9f9; }
+.notif-item img { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.notif-item .notif-content h5 { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
+.notif-item .notif-content p { font-size: 11px; color: #888; }
+.notif-empty { padding: 30px 15px; text-align: center; color: #888; font-size: 13px; }
+
+/* DARK MODE TOGGLE */
+.dark-toggle { cursor: pointer; padding: 5px; color: #555; font-size: 18px; margin-right: 8px; }
+body.dark-mode { background: #1a1a1a !important; color: #fff !important; }
+body.dark-mode .top-header { background: #1a1a1a !important; border-bottom: 1px solid #333; }
+body.dark-mode .top-header .menu-icon span { background: #fff !important; }
+body.dark-mode .top-header .search-icon,
+body.dark-mode .top-header .notif-icon,
+body.dark-mode .top-header .dark-toggle { color: #fff !important; }
+body.dark-mode .section { background: #2a2a2a; }
+body.dark-mode .section-title { color: #fff; }
+body.dark-mode .app-list-item { background: #2a2a2a; border-color: #444; }
+body.dark-mode .app-list-item h3 { color: #fff; }
+body.dark-mode .app-list-item .meta { color: #aaa; }
+body.dark-mode .top-app-card h3 { color: #fff; }
+body.dark-mode .top-app-card p { color: #aaa; }
+body.dark-mode .bottom-nav { background: #1a1a1a !important; }
+body.dark-mode footer { background: #1a1a1a; color: #888; }
+body.dark-mode .subscribe-form input { color: #1a1a1a; }
+body.dark-mode .notif-dropdown { background: #2a2a2a; }
+body.dark-mode .notif-header { border-color: #444; }
+body.dark-mode .notif-header h4 { color: #fff; }
+body.dark-mode .notif-item { border-color: #333; }
+body.dark-mode .notif-item:hover { background: #333; }
+body.dark-mode .notif-item .notif-content h5 { color: #fff; }
+body.dark-mode .search-box { background: #2a2a2a; }
+body.dark-mode .search-box input { background: #1a1a1a; color: #fff; border-color: #444; }
+body.dark-mode .search-results { background: #2a2a2a; }
+body.dark-mode .search-result-item { border-color: #333; }
+body.dark-mode .search-result-item:hover { background: #333; }
+body.dark-mode .search-result-item .info h4 { color: #fff; }
+body.dark-mode .side-menu { background: #2a2a2a; }
+body.dark-mode .side-menu a { color: #fff; border-color: #444; }
+body.dark-mode .side-menu a:hover { background: #333; }
